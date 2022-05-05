@@ -1,12 +1,13 @@
 package com.example.bankline.ui.statement
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.bankline.data.State
 import com.example.bankline.databinding.ActivityBankStatementBinding
 import com.example.bankline.domain.Correntista
-import com.example.bankline.domain.Movimentacao
-import com.example.bankline.domain.TipoMovimentacao
+import com.google.android.material.snackbar.Snackbar
 
 class BankStatementActivity : AppCompatActivity() {
 
@@ -15,6 +16,8 @@ class BankStatementActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityBankStatementBinding
+
+    private val viewModel by viewModels<BankStatementViewModel>()
 
     private val accountHolder by lazy{
         intent.getParcelableExtra<Correntista>(EXTRA_ACCOUNT_HOLDER) ?: throw IllegalArgumentException()
@@ -29,13 +32,21 @@ class BankStatementActivity : AppCompatActivity() {
     }
 
     private fun findBankStatement() {
-        val dataSet = ArrayList<Movimentacao>()
-        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.RECEITA, 1))
-        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.RECEITA, 1))
-        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.DESPESA, 1))
-        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.RECEITA, 1))
-        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.DESPESA, 1))
-        binding.rvBankStatement.layoutManager = LinearLayoutManager(this)
-        binding.rvBankStatement.adapter = BankStatementAdapter(dataSet)
+        viewModel.findBankStatement(accountHolder.id).observe(this){
+            state->
+
+            when(state){
+                is State.Success->{
+                    binding.rvBankStatement.layoutManager = LinearLayoutManager(this)
+                    binding.rvBankStatement.adapter = state.data?.let { BankStatementAdapter(it)}
+                }
+                is State.Error -> {
+                    state.message?.let { Snackbar.make(binding.rvBankStatement, it, Snackbar.LENGTH_LONG).show() }
+                }
+                State.Wait -> {
+
+                }
+            }
+        }
     }
 }
