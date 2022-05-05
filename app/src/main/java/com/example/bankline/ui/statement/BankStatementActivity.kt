@@ -1,12 +1,12 @@
 package com.example.bankline.ui.statement
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import com.example.bankline.R
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bankline.databinding.ActivityBankStatementBinding
 import com.example.bankline.domain.Correntista
-import java.lang.IllegalArgumentException
+import com.example.bankline.domain.Movimentacao
+import com.example.bankline.domain.TipoMovimentacao
 
 class BankStatementActivity : AppCompatActivity() {
 
@@ -25,6 +25,17 @@ class BankStatementActivity : AppCompatActivity() {
         binding = ActivityBankStatementBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        Log.i("ID", accountHolder.id.toString())
+        findBankStatement()
+    }
+
+    private fun findBankStatement() {
+        val dataSet = ArrayList<Movimentacao>()
+        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.RECEITA, 1))
+        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.RECEITA, 1))
+        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.DESPESA, 1))
+        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.RECEITA, 1))
+        dataSet.add(Movimentacao(1, "03/05/2022 09:24:55", "Lorem Ipsum", 10000.0, TipoMovimentacao.DESPESA, 1))
+        binding.rvBankStatement.layoutManager = LinearLayoutManager(this)
+        binding.rvBankStatement.adapter = BankStatementAdapter(dataSet)
     }
 }
