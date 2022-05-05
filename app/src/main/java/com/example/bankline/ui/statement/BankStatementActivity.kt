@@ -29,6 +29,13 @@ class BankStatementActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         findBankStatement()
+        ouvinteSwipeRefreshLayout()
+    }
+
+    private fun ouvinteSwipeRefreshLayout() {
+        binding.srlBankStatement.setOnRefreshListener {
+            findBankStatement()
+        }
     }
 
     private fun findBankStatement() {
@@ -39,12 +46,14 @@ class BankStatementActivity : AppCompatActivity() {
                 is State.Success->{
                     binding.rvBankStatement.layoutManager = LinearLayoutManager(this)
                     binding.rvBankStatement.adapter = state.data?.let { BankStatementAdapter(it)}
+                    binding.srlBankStatement.isRefreshing = false
                 }
                 is State.Error -> {
                     state.message?.let { Snackbar.make(binding.rvBankStatement, it, Snackbar.LENGTH_LONG).show() }
+                    binding.srlBankStatement.isRefreshing = false
                 }
                 State.Wait -> {
-
+                    binding.srlBankStatement.isRefreshing = true
                 }
             }
         }
